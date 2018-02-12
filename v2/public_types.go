@@ -125,3 +125,54 @@ func tickerSnapshotFromRaw(raw []interface{}) (ts TickerSnapshot, err error) {
 //Rate   float64
 //Period int64
 //}
+
+type Candle struct {
+	MTS    uint64
+	Open   float64
+	Close  float64
+	High   float64
+	Low    float64
+	Volume float64
+}
+
+type CandleSnapshot []Candle
+
+func candleFromRaw(raw []interface{}) (Candle, error) {
+	if len(raw) < 6 {
+		return Candle{}, fmt.Errorf("data slice is not compatible with candle: %#v", raw)
+	}
+
+	candle := Candle{
+		MTS:    uint64(f64ValOrZero(raw[0])),
+		Open:   f64ValOrZero(raw[1]),
+		Close:  f64ValOrZero(raw[2]),
+		High:   f64ValOrZero(raw[3]),
+		Low:    f64ValOrZero(raw[4]),
+		Volume: f64ValOrZero(raw[5]),
+	}
+
+	return candle, nil
+}
+
+func candleSnapshotFromRaw(raw []interface{}) (cs CandleSnapshot, err error) {
+	if len(raw) == 0 {
+		return
+	}
+
+	switch raw[0].(type) {
+	case []interface{}:
+		for _, v := range raw {
+			if l, ok := v.([]interface{}); ok {
+				c, err := candleFromRaw(l)
+				if err != nil {
+					return cs, err
+				}
+				cs = append(cs, c)
+			}
+		}
+	default:
+		return cs, fmt.Errorf("not a candle snapshot")
+	}
+
+	return
+}

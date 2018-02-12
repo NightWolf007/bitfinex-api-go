@@ -44,6 +44,7 @@ type Client struct {
 	Trades    *TradeService
 	Ticker    *TickerService
 	Tickers   *TickersService
+	Candles   *CandlesService
 }
 
 func NewClient() *Client {
@@ -62,6 +63,7 @@ func NewClientWithHTTP(h *http.Client) *Client {
 	c.Trades = &TradeService{client: c}
 	c.Ticker = &TickerService{client: c}
 	c.Tickers = &TickersService{client: c}
+	c.Candles = &CandlesService{client: c}
 
 	return c
 }
