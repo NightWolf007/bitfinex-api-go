@@ -11,16 +11,16 @@ type CandlesService struct {
 }
 
 // Hist (timeFrame, symbol, limit, start, end, sort) - return hist candles
-func (s *CandlesService) Hist(timeFrame string, symbol string, limit int, start int, end int, sort int) (CandleSnapshot, error) {
+func (s *CandlesService) Hist(timeFrame string, symbol string, limit int, start uint64, end uint64, sort int) (CandleSnapshot, error) {
 	params := url.Values{}
 	if limit > 0 {
 		params.Set("limit", strconv.Itoa(limit))
 	}
 	if start > 0 {
-		params.Set("start", strconv.Itoa(start))
+		params.Set("start", strconv.FormatUint(start, 10))
 	}
 	if end > 0 {
-		params.Set("end", strconv.Itoa(end))
+		params.Set("end", strconv.FormatUint(end, 10))
 	}
 	params.Set("sort", strconv.Itoa(sort))
 
